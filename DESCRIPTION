@@ -1,0 +1,11 @@
+Package: diatools
+Type: Package
+Title: Utilities for diagenetic modeling
+Version: 0.1
+Date: 2016-03-02
+Author: David Kneis <david.kneis@tu-dresden.de>
+Maintainer: David Kneis <david.kneis@tu-dresden.de>
+Description: Provides a collection of utilities for diagenetic modeling.
+License: GPL (>= 2)
+Imports: fields
+
