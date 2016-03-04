@@ -35,10 +35,11 @@
 plotProfiles= function(name, dyn, gr, obs, xlab="mmol/L", ylab="depth",
   pos="center", lty=rep(1, length(times)), col=1:length(times), ...)
 {
-  if (!all(c("time","depth","value") %in% names(obs)))
-    stop("observation table must have columns 'time', 'depth', 'value'")
+  obsNames= c("time","depth","value")
+  if (!all(obsNames %in% names(obs)))
+    stop("observation table must have columns '",paste(obsNames, collapse="','"),"'")
   times= sort(unique(obs$time))
-  t= dyn[,1]
+  t= dyn[,"time"]
   it= round(approx(x=t, y=1:length(t), xout=times, rule=1)$y)
   if (any(is.na(it)))
     stop("no data for requested time(s): ",paste(times[is.na(it)],collapse=", "))

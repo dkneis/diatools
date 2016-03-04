@@ -31,7 +31,7 @@
 plot3d= function(name, dyn, gr, xlab="time", ylab="depth", ...) {
   m= dyn[,paste(name,1:nrow(gr),sep=".")]
   m= m[,ncol(m):1]
-  t= dyn[,1]
+  t= dyn[,"time"]
   d= c(-gr$zLw[nrow(gr):1], 0)
   if (min(m) != max(m)) {
     fields::image.plot(x=t, y=d, z=m, xlab=xlab, ylab=ylab, ...)
