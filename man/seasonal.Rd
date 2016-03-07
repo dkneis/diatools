@@ -4,18 +4,18 @@
 \alias{seasonal}
 \title{Uni-modal seasonality}
 \usage{
-seasonal(daynum, daymin, daymax, ymin, ymax)
+seasonal(daynum, day1, day2, y1, y2)
 }
 \arguments{
 \item{daynum}{Day of the year (value in range 1:366). Can be a vector.}
 
-\item{daymin}{Day of the annual minimum, scalar.}
+\item{day1}{First day with fixed value, scalar.}
 
-\item{daymax}{Day of the annual maximum, scalar.}
+\item{day2}{Second day with fixed value, scalar. Must be > \code{day1}.}
 
-\item{ymin}{Value of the annual minimum, scalar.}
+\item{y1}{Value at \code{day1}, scalar.}
 
-\item{ymax}{Value of the annual maximum, scalar.}
+\item{y2}{Value at \code{day2}, scalar.}
 }
 \value{
 Numeric vector of the same length as \code{daynum}.
