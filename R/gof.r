@@ -45,8 +45,8 @@ gof= function(dyn, gr, obs, f=function(sim,obs) {mean((sim-obs)^2)})
     stop("observation table must have columns '",paste(obsNames, collapse="','"),"'")
   err= list()
   for (v in sort(unique(obs$variable))) {
-    cols= which(grepl(pattern=paste0("^",v,"[.][0123456789]+$"), x=colnames(dyn)))
-    if (length(cols) > 0) {
+    cols= match(paste(v,1:nrow(gr),sep="."), colnames(dyn))
+    if (!all(is.na(cols))) {
       if (length(cols) != nrow(gr))
         stop("number of selected columns does not match with grid dimension")
       # Filter for current variable
