@@ -4,7 +4,8 @@
 \alias{plot3d}
 \title{Color map of dynamic simulation output}
 \usage{
-plot3d(name, dyn, gr, xlab = "time", ylab = "depth", ...)
+plot3d(name, dyn, gr, xlab = "time", ylab = "depth",
+  timeconv = function(x) {     ISOdatetime(1970, 1, 1, 0, 0, 0) + x }, ...)
 }
 \arguments{
 \item{name}{Name of the item (i.e. variable or process rate) to be plotted.}
@@ -17,6 +18,9 @@ call to \code{\link{makeGrid}}.}
 \item{xlab}{Label for the time axis (x).}
 
 \item{ylab}{Label for the depth axis (y).}
+
+\item{timeconv}{A function applied to the first column of \code{dyn} in order
+to convert numeric times to values of class \code{POSIXct}.}
 
 \item{...}{Further arguments to be passed to \code{fields::image.plot}. It is
   often useful to pass \code{legend.mar} at least.}

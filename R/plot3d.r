@@ -8,6 +8,8 @@
 #'   call to \code{\link{makeGrid}}.
 #' @param xlab Label for the time axis (x).
 #' @param ylab Label for the depth axis (y).
+#' @param timeconv A function applied to the first column of \code{dyn} in order
+#'   to convert numeric times to values of class \code{POSIXct}.
 #' @param ... Further arguments to be passed to \code{fields::image.plot}. It is
 #'   often useful to pass \code{legend.mar} at least.
 #'
@@ -28,10 +30,11 @@
 #' colnames(dyn)= c("time", paste("X",1:nrow(gr),sep="."))
 #' plot3d("X", dyn, gr)
 
-plot3d= function(name, dyn, gr, xlab="time", ylab="depth", ...) {
+plot3d= function(name, dyn, gr, xlab="time", ylab="depth",
+  timeconv=function(x){ISOdatetime(1970,1,1,0,0,0)+x}, ...) {
   m= dyn[,paste(name,1:nrow(gr),sep=".")]
   m= m[,ncol(m):1]
-  t= dyn[,"time"]
+  t= timeconv(dyn[,"time"])
   d= c(-gr$zLw[nrow(gr):1], 0)
   if (min(m) != max(m)) {
     fields::image.plot(x=t, y=d, z=m, xlab=xlab, ylab=ylab, ...)

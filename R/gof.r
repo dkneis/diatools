@@ -19,7 +19,8 @@
 #'   have 4 columns named 'time', 'depth', 'variable', and 'value'.
 #'   Simulated values are assigned to the observation data based on a 
 #'   nearest-neighbor principle, i.e. data are picked from the nearest bin with
-#'   respect to both time and depth.
+#'   respect to both time and depth. Entries in the 'time' column are coerced
+#'   to numbers using \code{as.numeric}.
 #'
 #' @author David Kneis \email{david.kneis@@tu-dresden.de}
 #'
@@ -53,7 +54,7 @@ gof= function(dyn, gr, obs, f=function(sim,obs) {mean((sim-obs)^2)})
       dynSub= dyn[,cols]
       obsSub= subset(obs, obs$variable == v, select=c("time","depth","value"))
       # Assign model output to observations (nearest time and depth bin)
-      obsSub$irow= round(approx(x=dyn[,"time"], y=1:nrow(dynSub), xout=obsSub$time, rule=1)$y)
+      obsSub$irow= round(approx(x=dyn[,"time"], y=1:nrow(dynSub), xout=as.numeric(obsSub$time), rule=1)$y)
       obsSub$icol= round(approx(x=(gr$zUp+gr$zLw)/2, y=1:ncol(dynSub), xout=obsSub$depth, rule=1)$y)
       obsSub= subset(obsSub, (!is.na(obsSub$irow)) & (!is.na(obsSub$icol)))
       if (nrow(obsSub) > 0) {

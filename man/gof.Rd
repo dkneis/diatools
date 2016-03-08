@@ -34,7 +34,8 @@ The data frame of observations passed as \code{obs} needs to
   have 4 columns named 'time', 'depth', 'variable', and 'value'.
   Simulated values are assigned to the observation data based on a
   nearest-neighbor principle, i.e. data are picked from the nearest bin with
-  respect to both time and depth.
+  respect to both time and depth. Entries in the 'time' column are coerced
+  to numbers using \code{as.numeric}.
 }
 \examples{
 gr= makeGrid(dz0=0.01, dzMax=0.02, zMax=0.1, beta=1)
