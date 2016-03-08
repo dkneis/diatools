@@ -5,7 +5,8 @@
 \title{Plot dynamic simulation output as vertical profiles}
 \usage{
 plotProfiles(name, dyn, gr, obs, xlab = "mmol/L", ylab = "depth",
-  pos = "center", lty = rep(1, length(times)), col = 1:length(times), ...)
+  xlim = NULL, ylim = NULL, combine = TRUE, nc = NULL, pos = "top",
+  timeconv = function(x) {     ISOdatetime(1970, 1, 1, 0, 0, 0) + x }, ...)
 }
 \arguments{
 \item{name}{Name of the item (i.e. variable or process rate) to be plotted.}
@@ -21,11 +22,19 @@ call to \code{\link{makeGrid}}.}
 
 \item{ylab}{Label for the depth axis (y).}
 
+\item{xlim}{Limits for the value axis (x). Computed if \code{NULL}.}
+
+\item{ylim}{Limits for the depth axis (y). Computed if \code{NULL}.}
+
+\item{combine}{Combine data for all times in a single plot?}
+
+\item{nc}{Maximum number of columns in layout. Only used if \code{combine} is
+\code{FALSE}. The default of \code{NULL} puts all plots in a single row.}
+
 \item{pos}{Keyword specifying the position of the legend.}
 
-\item{lty}{Line types, 1 value or a vector as long as \code{times}.}
-
-\item{col}{Line colors, 1 value or a vector as long as \code{times}.}
+\item{timeconv}{A function applied to the first column of \code{dyn} in order
+to convert numeric times to values of class \code{POSIXct}.}
 
 \item{...}{Additional arguments to be passed to \code{legend}.}
 }
@@ -39,9 +48,12 @@ Plots the output of a dynamic 1D diagenetic model as vertical profiles.
 The data frame of observations passed as \code{obs} needs to
   have 3 columns named 'time', 'depth', and 'value'. If the times of
   observation do not match exactly with the model output, data for the
-  nearest time points available in \code{dyn} will be plotted.
+  nearest time points available in \code{dyn} will be plotted. Data in the
+  'time' column must be of the same type as the return value of \code{timeconv}.
   It is OK if the 'depth' and 'value' columns contain \code{NA} only and in
   that case, just the simulated data are plotted.
+  The \code{layout} mechanism is used to arrange figures if \code{combine} is
+  \code{FALSE}, thus, nesting within other multi-figure setups won't work.
 }
 \examples{
 gr= makeGrid(dz0=0.01, dzMax=0.02, zMax=0.2, beta=1)
@@ -51,7 +63,7 @@ dyn= cbind(times, values)
 colnames(dyn)= c("time", paste("X",1:nrow(gr),sep="."))
 obs= data.frame(time=c(1,1,2,2,2), depth=c(0.03, 0.04, 0.03, 0.04, 0.05))
 obs$value= runif(nrow(obs))
-plotProfiles("X", dyn, gr, obs)
+plotProfiles("X", dyn, gr, obs, timeconv=function(x){x})
 }
 \author{
 David Kneis \email{david.kneis@tu-dresden.de}
