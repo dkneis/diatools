@@ -2,6 +2,7 @@
 
 export(gof)
 export(makeGrid)
+export(makeHTML)
 export(plot3d)
 export(plotProfiles)
 export(seasonal)
