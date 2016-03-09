@@ -45,7 +45,7 @@ makeHTML = function(x, title="untitled") {
     #content{min-height:500px; width:80%; position:relative;
       background-color:White; float:right; overflow-x:scroll;}
     h1{color:#5075A9; line-height:20px; margin-top:40px; margin-bottom:2px;}
-    h2{color:#5075A9; line-height:14px; margin-top:2px; margin-bottom:2px;}
+    h2{color:#5075A9; line-height:14px; margin-top:25px; margin-bottom:2px;}
   ",
   "</style>\n</head>")
   # Open body and wrapper
@@ -64,15 +64,11 @@ makeHTML = function(x, title="untitled") {
   # Contents
   html=paste0(html,"\n    <div id=\"content\">")
   for (i in 1:nrow(x)) {
-    if ((i == 1) || (!identical(x$h1[i],x$h1[i-1]))) {
-      html= paste0(html,"\n      <h1>",x$h1[i],"</h1><p>")
-      html= paste0(html,"\n      <a name=\"",x$ref[i],"\">")
-    }
+    if ((i == 1) || (!identical(x$h1[i],x$h1[i-1])))
+      html= paste0(html,"\n      <h1><a name=\"",x$ref[i],"\">",x$h1[i],"</a></h1><p>")
     if (!is.na(x$h2[i])) {
-      if ((i == 1) || (!identical(x$h2[i],x$h2[i-1]))) {
-        html= paste0(html,"\n      <h2>",x$h2[i],"</h2><p>")
-        html= paste0(html,"\n      <a name=\"",x$ref[i],"\">")
-      }
+      if ((i == 1) || (!identical(x$h2[i],x$h2[i-1])))
+        html= paste0(html,"\n      <h2><a name=\"",x$ref[i],"\">",x$h2[i],"</a></h2><p>")
     }
     html= paste0(html,"\n      <img src=\"",x$file[i],"\" width=\"",x$width[i],
       "\" height=\"auto\">")
