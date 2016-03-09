@@ -5,8 +5,10 @@
 \title{Plot dynamic simulation output as vertical profiles}
 \usage{
 plotProfiles(name, dyn, gr, obs, xlab = "mmol/L", ylab = "depth",
-  xlim = NULL, ylim = NULL, combine = TRUE, nc = NULL, pos = "top",
-  timeconv = function(x) {     ISOdatetime(1970, 1, 1, 0, 0, 0) + x }, ...)
+  xlim = NULL, ylim = NULL, pos = "top", timeconv = function(x) {    
+  ISOdatetime(1970, 1, 1, 0, 0, 0) + x }, width = 4, height = 4,
+  pointsize = 10, dir = ".", fmt = "svg", prefix = "profile",
+  replace = TRUE, ...)
 }
 \arguments{
 \item{name}{Name of the item (i.e. variable or process rate) to be plotted.}
@@ -26,20 +28,30 @@ call to \code{\link{makeGrid}}.}
 
 \item{ylim}{Limits for the depth axis (y). Computed if \code{NULL}.}
 
-\item{combine}{Combine data for all times in a single plot?}
-
-\item{nc}{Maximum number of columns in layout. Only used if \code{combine} is
-\code{FALSE}. The default of \code{NULL} puts all plots in a single row.}
-
 \item{pos}{Keyword specifying the position of the legend.}
 
 \item{timeconv}{A function applied to the first column of \code{dyn} in order
 to convert numeric times to values of class \code{POSIXct}.}
 
+\item{width}{Plot width in inch.}
+
+\item{height}{Plot height in inch.}
+
+\item{pointsize}{Font size.}
+
+\item{dir}{Output directory for generated graphics.}
+
+\item{fmt}{Graphics format, either 'svg' or 'pdf'.}
+
+\item{prefix}{Prefix put before the value of \code{name} when constructing
+file names.}
+
+\item{replace}{If \code{FALSE} existing output files result in an error.}
+
 \item{...}{Additional arguments to be passed to \code{legend}.}
 }
 \value{
-\code{NULL}
+A vector holding the names of the generated graphics files.
 }
 \description{
 Plots the output of a dynamic 1D diagenetic model as vertical profiles.
@@ -52,8 +64,6 @@ The data frame of observations passed as \code{obs} needs to
   'time' column must be of the same type as the return value of \code{timeconv}.
   It is OK if the 'depth' and 'value' columns contain \code{NA} only and in
   that case, just the simulated data are plotted.
-  The \code{layout} mechanism is used to arrange figures if \code{combine} is
-  \code{FALSE}, thus, nesting within other multi-figure setups won't work.
 }
 \examples{
 gr= makeGrid(dz0=0.01, dzMax=0.02, zMax=0.2, beta=1)
@@ -63,7 +73,7 @@ dyn= cbind(times, values)
 colnames(dyn)= c("time", paste("X",1:nrow(gr),sep="."))
 obs= data.frame(time=c(1,1,2,2,2), depth=c(0.03, 0.04, 0.03, 0.04, 0.05))
 obs$value= runif(nrow(obs))
-plotProfiles("X", dyn, gr, obs, timeconv=function(x){x})
+plotProfiles("X", dyn, gr, obs, timeconv=function(x){x}, dir=tempdir())
 }
 \author{
 David Kneis \email{david.kneis@tu-dresden.de}
