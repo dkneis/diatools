@@ -27,6 +27,8 @@ The data frame \code{x} must have 4 columns named 'h1', 'h2', 'width',
   e.g. '50%'. The last column contains the names of the graphics files to
   display. The files need to be in a format supported by the web browser
   such as SVG or PNG for vector and pixel graphics, respectively.
+
+  The data frame is \emph{not} sorted by any column (not even 'h1').
 }
 \examples{
 test= data.frame(stringsAsFactors=FALSE,

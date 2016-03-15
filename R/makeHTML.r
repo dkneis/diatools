@@ -17,6 +17,8 @@
 #'   display. The files need to be in a format supported by the web browser
 #'   such as SVG or PNG for vector and pixel graphics, respectively.
 #'
+#'   The data frame is \emph{not} sorted by any column (not even 'h1').
+#'
 #' @author David Kneis \email{david.kneis@@tu-dresden.de}
 #'
 #' @export
@@ -71,7 +73,7 @@ makeHTML = function(x, title="untitled") {
         html= paste0(html,"\n      <h2><a name=\"",x$ref[i],"\">",x$h2[i],"</a></h2><p>")
     }
     html= paste0(html,"\n      <img src=\"",x$file[i],"\" width=\"",x$width[i],
-      "\" height=\"auto\">")
+      "\" height=\"auto\" alt=\"",x$file[i],"\">")
   }
   html=paste0(html,"\n    </div>")
   # Close wrapper and body
