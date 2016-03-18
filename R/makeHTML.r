@@ -43,11 +43,18 @@ makeHTML = function(x, title="untitled") {
     #wrapper{min-height:100%; width:100%; position:relative;
       background-color:White; display:inline-block;}
     #sidebar{width:15%; top:0px; left:0px; bottom:0px; position:fixed;
-      background-color:#E4E4E4; overflow:scroll;}
+      background-color:#f5f5f5; overflow:scroll;}
     #content{min-height:500px; width:80%; position:relative;
       background-color:White; float:right; overflow-x:scroll;}
-    h1{color:#5075A9; line-height:20px; margin-top:40px; margin-bottom:2px;}
-    h2{color:#5075A9; line-height:14px; margin-top:25px; margin-bottom:2px;}
+    a:link{color: #5F5F5F; text-decoration: none;}
+    a:visited{color: #5F5F5F; text-decoration: none;}
+    a:hover {color: blue; text-decoration: none;}
+    a:active {color: blue; text-decoration: none;}
+    body{color: #5F5F5F; font: normal 14px Helvetica,Arial,sans-serif;}
+    h1{color: #5F5F5F; font: normal 20px Helvetica,Arial,sans-serif;
+      line-height:20px; margin-top:40px; margin-bottom:2px;}
+    h2{color: #5F5F5F; font: normal 14px Helvetica,Arial,sans-serif;
+      line-height:14px; margin-top:25px; margin-bottom:2px;}
   ",
   "</style>\n</head>")
   # Open body and wrapper
