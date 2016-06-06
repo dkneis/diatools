@@ -34,18 +34,18 @@ plotTimeseries= function(names, dyn, xlab="", ylab="", xlim=NULL, ylim=NULL,
   if ((!replace) && file.exists(ofile))
     stop("file '",ofile,"' already exists")
   if (fmt=="svg")
-    svg(ofile, width=width, height=height, pointsize=pointsize)
+    grDevices::svg(ofile, width=width, height=height, pointsize=pointsize)
   else if (fmt=="pdf")
-    pdf(ofile, width=width, height=height, pointsize=pointsize)
+    grDevices::pdf(ofile, width=width, height=height, pointsize=pointsize)
   else
     stop("graphics format '",fmt,"' not supported")
-  plot(x=0, y=0, xlim=xrng, ylim=yrng, type="n", bty="n", xlab=xlab, ylab=ylab)
+  graphics::plot(x=0, y=0, xlim=xrng, ylim=yrng, type="n", bty="n", xlab=xlab, ylab=ylab)
   for (i in 1:length(names)) {
-    lines(t, dyn[,names[i]], lty=lty[i], col=col[i])
+    graphics::lines(t, dyn[,names[i]], lty=lty[i], col=col[i])
   }
   if (length(names) > 1)
-    legend(pos, bty="n", col=col, lty=lty, legend=names, ...)
-  graphics.off()
+    graphics::legend(pos, bty="n", col=col, lty=lty, legend=names, ...)
+  grDevices::graphics.off()
   return(invisible(NULL))
 }
 

@@ -54,8 +54,8 @@ gof= function(dyn, gr, obs, f=function(sim,obs) {mean((sim-obs)^2)})
       dynSub= dyn[,cols]
       obsSub= subset(obs, obs$variable == v, select=c("time","depth","value"))
       # Assign model output to observations (nearest time and depth bin)
-      obsSub$irow= round(approx(x=dyn[,"time"], y=1:nrow(dynSub), xout=as.numeric(obsSub$time), rule=1)$y)
-      obsSub$icol= round(approx(x=(gr$zUp+gr$zLw)/2, y=1:ncol(dynSub), xout=obsSub$depth, rule=1)$y)
+      obsSub$irow= round(stats::approx(x=dyn[,"time"], y=1:nrow(dynSub), xout=as.numeric(obsSub$time), rule=1)$y)
+      obsSub$icol= round(stats::approx(x=(gr$zUp+gr$zLw)/2, y=1:ncol(dynSub), xout=obsSub$depth, rule=1)$y)
       obsSub= subset(obsSub, (!is.na(obsSub$irow)) & (!is.na(obsSub$icol)))
       if (nrow(obsSub) > 0) {
         pos= (obsSub$icol-1)*nrow(dynSub)+obsSub$irow

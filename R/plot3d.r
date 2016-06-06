@@ -35,12 +35,12 @@ plot3d= function(name, dyn, gr, xlab="time", ylab="depth",
   m= dyn[,paste(name,1:nrow(gr),sep=".")]
   m= m[,ncol(m):1]
   t= timeconv(dyn[,"time"])
-  d= c(-gr$zLw[nrow(gr):1], 0)
+  d= -1*c(gr$zLw[nrow(gr):1], gr$zUp[1])
   if (min(m) != max(m)) {
     fields::image.plot(x=t, y=d, z=m, xlab=xlab, ylab=ylab, ...)
   } else {
-    plot(x=range(t), y=range(d), type="n", bty="n", xlab=xlab, ylab=ylab)
-    legend("center", bty="n", legend=paste0("const at ",min(m)))
+    graphics::plot(x=range(t), y=range(d), type="n", bty="n", xlab=xlab, ylab=ylab)
+    graphics::legend("center", bty="n", legend=paste0("const at ",min(m)))
   }
   return(invisible(NULL))
 }

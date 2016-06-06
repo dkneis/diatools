@@ -53,7 +53,7 @@ plotProfiles= function(name, dyn, gr, obs, xlab="mmol/L", ylab="depth",
     stop("observation table must have columns '",paste(obsNames, collapse="','"),"'")
   times= sort(unique(obs$time))
   t= timeconv(dyn[,"time"])
-  it= round(approx(x=t, y=1:length(t), xout=times, rule=1)$y)
+  it= round(stats::approx(x=t, y=1:length(t), xout=times, rule=1)$y)
   if (any(is.na(it)))
     stop("no data for requested time(s): ",paste(times[is.na(it)],collapse=", "))
   m= dyn[it,paste(name,1:nrow(gr),sep=".")]
@@ -73,17 +73,17 @@ plotProfiles= function(name, dyn, gr, obs, xlab="mmol/L", ylab="depth",
     if ((!replace) && file.exists(ofile))
       stop("file '",ofile,"' already exists")
     if (fmt=="svg")
-      svg(ofile, width=width, height=height, pointsize=pointsize)
+      grDevices::svg(ofile, width=width, height=height, pointsize=pointsize)
     else if (fmt=="pdf")
-      pdf(ofile, width=width, height=height, pointsize=pointsize)
+      grDevices::pdf(ofile, width=width, height=height, pointsize=pointsize)
     else
       stop("graphics format '",fmt,"' not supported")
-    plot(x=0, y=0, xlim=xrng, ylim=yrng, type="n", bty="n", xlab=xlab, ylab=ylab)
-    lines(m[i,], d)
+    graphics::plot(x=0, y=0, xlim=xrng, ylim=yrng, type="n", bty="n", xlab=xlab, ylab=ylab)
+    graphics::lines(m[i,], d)
     k= which(obs$time == times[i])
-    points(obs$value[k], -obs$depth[k])
-    legend(pos, bty="n", legend=times[i], ...)
-    graphics.off()
+    graphics::points(obs$value[k], -obs$depth[k])
+    graphics::legend(pos, bty="n", legend=times[i], ...)
+    grDevices::graphics.off()
   }
   return(out)
 }
