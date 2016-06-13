@@ -47,7 +47,7 @@ utils::globalVariables("indexOfSet")
 #'
 #' @note The function of interest is called as \code{fn(p[i,], ...)} or
 #'   \code{fn(p[i,], i, ...)}, depending on the value of \code{passIndex}. In
-#'   the latter case, the index of the currently processed  set available within
+#'   the latter case, the index of the currently processed set is available within
 #'   \code{fn}. This information can be used, for example, for diagnostic
 #'   messages of for creating file names which are unique for each (possibly
 #'   parallel) instance of \code{fn}.
