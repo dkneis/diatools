@@ -5,7 +5,7 @@
 \title{Query an Object of Class 'sim1D'}
 \usage{
 sim1D.query(obj, item, rangeT = c(NA, NA), rangeX = c(NA, NA),
-  partly = FALSE)
+  partly = FALSE, attrib = TRUE)
 }
 \arguments{
 \item{obj}{Object created with \code{sim1D.create}.}
@@ -21,16 +21,35 @@ range are dropped.}
 boxes/layers that are partly within the range \code{rangeX}. If
 \code{FALSE}, only data for boxes/layers being entirely within
 \code{rangeX} are returned.}
+
+\item{attrib}{Logical. Controls whether the return values has additional
+attributes set (see below).}
 }
 \value{
 A numeric matrix where rows represent time and columns represent
-  boxes/layers. Row names are constructed from the time values. Column names
-  are created by concatenating the boxes'/layers' minimum and maximum 
-  coordinate, separated by comma.
+  boxes/layers. The matrix has neither row names nor column names, but
+  if \code{attrib} is \code{TRUE}, the following attributes are set:
+\itemize{
+  \item{\code{times} : } Numeric vector of times corresponding to the rows.
+  \item{\code{coordinates} : } Spatial coordinates corresponding to the
+    columns. This is a matrix with two colums 'min' and 'max'.
+}
 }
 \description{
-Query an object of class 'sim1D' holding the output of a dynamic, 1D,
-rodeo-based model.
+Query an object of class 'sim1D' holding the output of a dynamic, 1D model.
+}
+\examples{
+gr <- makeGrid(dz0=0.01, dzMax=0.02, zMax=0.1, beta=1)
+times <- 0:2
+vars <- c("A","B")
+pros <- c("X","Y")
+values <- matrix(1:(length(times)*nrow(gr)*(length(vars)+length(pros))),
+  nrow=length(times))
+dyn <- cbind(times, values)
+colnames(dyn) <- c("time", paste(rep(vars, each=nrow(gr)), 1:nrow(gr),sep="."),
+  paste(rep(pros, each=nrow(gr)), 1:nrow(gr),sep="."))
+obj <- sim1D.create(dyn, namesVars=vars, namesPros=pros, xMin=gr$zUp, xMax=gr$zLw)
+sim1D.query(obj, item="X")
 }
 \author{
 David Kneis \email{david.kneis@tu-dresden.de}

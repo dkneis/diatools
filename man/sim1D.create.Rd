@@ -4,16 +4,21 @@
 \alias{sim1D.create}
 \title{Create an Object of Class 'sim1D'}
 \usage{
-sim1D.create(dyn, model, xMin, xMax, keepItems = c(model$namesVars(),
-  model$namesPros()), sep = ".", rangeT = c(NA, NA), rangeX = c(NA, NA),
+sim1D.create(dyn, namesVars, namesPros, xMin, xMax, keepItems = c(namesVars,
+  namesPros), sep = ".", rangeT = c(NA, NA), rangeX = c(NA, NA),
   nsig = 2)
 }
 \arguments{
 \item{dyn}{Numeric matrix output by the ODE solver
-(e.g. \code{\link[deSolve]{ode}}).}
+(e.g. \code{\link[deSolve]{ode}}) for a 1D model.}
 
-\item{model}{An object of the \code{\link[rodeo]{rodeo-class}} representing
-the model used to create \code{dyn}.}
+\item{namesVars}{Names of the state variables in \code{dyn}. If \code{dyn}
+was produced with a \code{\link[rodeo]{rodeo}}-based model, the model
+object's \code{namesVars()} method returns the required names.}
+
+\item{namesPros}{Names of the processes in \code{dyn}. If \code{dyn}
+was produced with a \code{\link[rodeo]{rodeo}}-based model, the model
+object's \code{namesPros()} method returns the required names.}
 
 \item{xMin}{Minimum coordinates of the spatial boxes, e.g. top layer
 boundaries in a vertical 1D model.}
@@ -22,7 +27,7 @@ boundaries in a vertical 1D model.}
 boundaries in a vertical 1D model.}
 
 \item{keepItems}{Names of the items to be kept. Must be names of state
-variables or processes existing in \code{model}.}
+variables or processes existing in the model.}
 
 \item{sep}{The character used in the column names of \code{dyn} to separate
 the variable/process name from the box/layer index.}
@@ -39,8 +44,19 @@ An object of class 'sim1D'. Use \code{sim1D.query} to extract data
   from such objects.
 }
 \description{
-Create an object of class 'sim1D' from the output of a dynamic, 1D,
-rodeo-based model.
+Create an object of class 'sim1D' from the output of a dynamic, 1D model.
+}
+\examples{
+gr <- makeGrid(dz0=0.01, dzMax=0.02, zMax=0.1, beta=1)
+times <- 0:2
+vars <- c("A","B")
+pros <- c("X","Y")
+values <- matrix(1:(length(times)*nrow(gr)*(length(vars)+length(pros))),
+  nrow=length(times))
+dyn <- cbind(times, values)
+colnames(dyn) <- c("time", paste(rep(vars, each=nrow(gr)), 1:nrow(gr),sep="."),
+  paste(rep(pros, each=nrow(gr)), 1:nrow(gr),sep="."))
+obj <- sim1D.create(dyn, namesVars=vars, namesPros=pros, xMin=gr$zUp, xMax=gr$zLw)
 }
 \author{
 David Kneis \email{david.kneis@tu-dresden.de}
