@@ -30,34 +30,25 @@
 #' @author David Kneis \email{david.kneis@@tu-dresden.de}
 #'
 #' @export
-#'
-#' @examples
-#' gr= makeGrid(dz0=0.01, dzMax=0.02, zMax=0.2, beta=1)
-#' times= 0:2
-#' values= matrix(runif(length(times)*nrow(gr)), nrow=length(times))
-#' dyn= cbind(times, values)
-#' colnames(dyn)= c("time", paste("X",1:nrow(gr),sep="."))
-#' obs= data.frame(time=c(1,1,2,2,2), depth=c(0.03, 0.04, 0.03, 0.04, 0.05))
-#' obs$value= runif(nrow(obs))
-#' plotProfiles("X", dyn, gr, obs, timeconv=function(x){x}, dir=tempdir())
 
-plotProfiles= function(name, dyn, gr, obs, xlab="mmol/L", ylab="depth",
-  xlim=NULL, ylim=NULL, 
-  pos="top",
+plotProfiles= function(obj, item, obs, xlab="mmol/L", ylab="depth",
+  xlim=NULL, ylim=NULL, pos="top",
   timeconv=function(x){ISOdatetime(1970,1,1,0,0,0)+x},
   width=4, height=4, pointsize=10,
   dir=".", fmt="svg", prefix="profile", replace=TRUE, ...)
 {
+  if (class(obj) != "sim1D")
+    stop("'obj' is not an object of class 'sim1D'")   
   obsNames= c("time","depth","value")
   if (!all(obsNames %in% names(obs)))
     stop("observation table must have columns '",paste(obsNames, collapse="','"),"'")
   times= sort(unique(obs$time))
-  t= timeconv(dyn[,"time"])
+  t= timeconv(attr(obj, which="times", exact=TRUE))
   it= round(stats::approx(x=t, y=1:length(t), xout=times, rule=1)$y)
   if (any(is.na(it)))
     stop("no data for requested time(s): ",paste(times[is.na(it)],collapse=", "))
-  m= dyn[it,paste(name,1:nrow(gr),sep=".")]
-  d= -0.5 * (gr$zLw + gr$zUp)
+  m= sim1D.query(obj, item, rangeT=c(NA,NA), rangeX=c(NA,NA), partly=TRUE, attrib=TRUE)
+  d= -0.5 * apply(attr(obj, which="coordinates", exact=TRUE), 1, sum) # layer mids
   if (is.null(xlim))
     xrng= range(c(m, obs$value), na.rm=TRUE)
   else
@@ -68,7 +59,7 @@ plotProfiles= function(name, dyn, gr, obs, xlab="mmol/L", ylab="depth",
     yrng= ylim
   out=c()
   for (i in 1:length(it)) {
-    ofile= paste0(dir,"/",prefix,name,"_",i,".",fmt)
+    ofile= paste0(dir,"/",prefix,item,"_",i,".",fmt)
     out= c(out, ofile)
     if ((!replace) && file.exists(ofile))
       stop("file '",ofile,"' already exists")
@@ -79,7 +70,7 @@ plotProfiles= function(name, dyn, gr, obs, xlab="mmol/L", ylab="depth",
     else
       stop("graphics format '",fmt,"' not supported")
     graphics::plot(x=0, y=0, xlim=xrng, ylim=yrng, type="n", bty="n", xlab=xlab, ylab=ylab)
-    graphics::lines(m[i,], d)
+    graphics::lines(m[it[i],], d)
     k= which(obs$time == times[i])
     graphics::points(obs$value[k], -obs$depth[k])
     graphics::legend(pos, bty="n", legend=times[i], ...)
