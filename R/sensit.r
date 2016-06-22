@@ -123,7 +123,8 @@ sensit= function(p, fn, nNodes=1, nCores=1, passIndex=FALSE, silent=FALSE, ...) 
   ok= !is.na(cpu)
   cpu= cpu[ok]
   fnOut= fnOut[ok]
-  names(fnOut)= paste0("set",which(ok))
+  if (length(fnOut) > 0)
+    names(fnOut)= paste0("set",which(ok))
 
   # Return tested parameter values and function results
   return(list(nFailed=sum(!ok), whichOK=which(ok), fnOut=fnOut, cpu=cpu))
