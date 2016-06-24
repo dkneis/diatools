@@ -54,7 +54,7 @@ plotProfiles= function(obj, item, obs, xlab="mmol/L", ylab="depth",
   else
     xrng= xlim
   if (is.null(ylim))
-    yrng= range(c(d, -obs$depth))
+    yrng= range(c(d, -obs$depth), na.rm=TRUE)
   else
     yrng= ylim
   out=c()
