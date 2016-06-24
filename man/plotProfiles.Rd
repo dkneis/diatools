@@ -4,7 +4,7 @@
 \alias{plotProfiles}
 \title{Plot dynamic simulation output as vertical profiles}
 \usage{
-plotProfiles(obj, item, obs, xlab = "mmol/L", ylab = "depth", xlim = NULL,
+plotProfiles(obj, item, obs, xlab = "", ylab = "depth", xlim = NULL,
   ylim = NULL, pos = "top", timeconv = function(x) {     ISOdatetime(1970,
   1, 1, 0, 0, 0) + x }, width = 4, height = 4, pointsize = 10,
   dir = ".", fmt = "svg", prefix = "profile", replace = TRUE, ...)

@@ -31,7 +31,7 @@
 #'
 #' @export
 
-plotProfiles= function(obj, item, obs, xlab="mmol/L", ylab="depth",
+plotProfiles= function(obj, item, obs, xlab="", ylab="depth",
   xlim=NULL, ylim=NULL, pos="top",
   timeconv=function(x){ISOdatetime(1970,1,1,0,0,0)+x},
   width=4, height=4, pointsize=10,
