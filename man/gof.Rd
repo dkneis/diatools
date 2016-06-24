@@ -18,7 +18,7 @@ data as input. It should return a numeric vector (which can be of length 1).}
 A list with as many elements as there are corresponding variables in
   \code{dyn} and \code{obs}. Each element contains the output of \code{f}.
   If, for a particular variable, no corresponding data are found (because
-  of a missing overlap of depth and/or time interval), the list element for
+  of a missing overlap of spatial and/or time interval), the list element for
   that variable is set to \code{NULL}.
   If there aren't any corresponding variables (due to a lack of matching
   names), the return value is a list of length 0.

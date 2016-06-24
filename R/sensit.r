@@ -14,15 +14,15 @@ utils::globalVariables("indexOfSet")
 #'   a named numeric vector of parameters. See \code{passIndex} for the meaning
 #'   of a possible second argument. There are no restrictions with
 #'   respect to the return value of \code{fn}.
-#' @param nNodes A positive integer passed as the first argument to
-#'   \code{\link[doParallel]{registerDoParallel}}.
-#' @param nCores A positive integer passed as the second argument to
-#'   \code{\link[doParallel]{registerDoParallel}}. Use
-#'   \code{\link[parallel]{detectCores}} to find out what value makes sense.
+#' @param n A positive integer specifying the number of child processes. It is
+#'   passed as the first argument to \code{\link[parallel]{makeCluster}}.
 #' @param passIndex Logical. If \code{TRUE}, function \code{fn} must accept as
 #'   its second argument an integer value representing the index of the
 #'   currently processed parameter set. 
 #' @param silent Logical. Use this to suppress diagnostic messages.
+#' @param logfile Name of a file to collect output messages of child processes.
+#'   If this is an empty string (default) output messages are likely to appear
+#'   on the screen.
 #' @param ... Additional arguments passed to function \code{fn}.
 #'
 #' @return A list with the following components.
@@ -55,6 +55,9 @@ utils::globalVariables("indexOfSet")
 #'   In any case, \code{fn} is executed within a \code{\link[base]{tryCatch}}
 #'   block. Any error messages (or warnings) are reported as warnings.
 #'
+#'   Any data or functions needed within \code{fn} should explicitly be passed
+#'   using the \code{...} argument.
+#'
 #' @author David Kneis \email{david.kneis@@tu-dresden.de}
 #'
 #' @export
@@ -69,16 +72,17 @@ utils::globalVariables("indexOfSet")
 #' # Observations
 #' obs= cbind(x=1:50, y=model(c(a=1, b=0.1), 1:50))
 #' # Objective function
-#' mse= function(p, obs) { mean((obs[,"y"] - model(p, obs[,"x"]))^2) }
+#' mse= function(p, model, obs) { mean((obs[,"y"] - model(p, obs[,"x"]))^2) }
 #' # Parameter sets to try
 #' nSets= 10
 #' p= cbind(a= seq(0, 2, length.out=nSets), b= seq(-0.2, 0.5, length.out=nSets))
 #' # Evaluate obj. function for all sets
-#' x= suppressWarnings(sensit(p=p, fn=mse, obs=obs))
+#' x= suppressWarnings(
+#'   sensit(p=p, fn=mse, n=2, model=model, obs=obs, logfile=""))
 #' # Show parameter sets that 'worked' together with results
 #' print(cbind(setIndex=x$whichOK, p[x$whichOK,], mse=simplifyList(x$fnOut)))
 
-sensit= function(p, fn, nNodes=1, nCores=1, passIndex=FALSE, silent=FALSE, ...) {
+sensit= function(p, fn, n=1, passIndex=FALSE, silent=FALSE, logfile="", ...) {
 
   # Check inputs
   if (!is.function(fn))
@@ -87,7 +91,8 @@ sensit= function(p, fn, nNodes=1, nCores=1, passIndex=FALSE, silent=FALSE, ...) 
     stop("'p' must be a numeric matrix having column names")
 
   # Create cluster
-  doParallel::registerDoParallel(cl=nNodes, cores=nCores)
+  cl <- parallel::makeCluster(n, outfile=logfile)
+  doParallel::registerDoParallel(cl)
 
   # Function to process a single set
   f= function(i, ...) {
@@ -114,6 +119,7 @@ sensit= function(p, fn, nNodes=1, nCores=1, passIndex=FALSE, silent=FALSE, ...) 
 
   # Process all sets
   tmp= foreach::foreach(indexOfSet=1:nrow(p)) %dopar% f(indexOfSet, ...)
+  parallel::stopCluster(cl)
 
   # Split components of result
   cpu= unlist(lapply(tmp, function(x){x$cpu}))

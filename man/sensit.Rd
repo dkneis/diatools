@@ -4,7 +4,7 @@
 \alias{sensit}
 \title{Sensitivity analysis}
 \usage{
-sensit(p, fn, nNodes = 1, nCores = 1, passIndex = FALSE, silent = FALSE,
+sensit(p, fn, n = 1, passIndex = FALSE, silent = FALSE, logfile = "",
   ...)
 }
 \arguments{
@@ -17,18 +17,18 @@ a named numeric vector of parameters. See \code{passIndex} for the meaning
 of a possible second argument. There are no restrictions with
 respect to the return value of \code{fn}.}
 
-\item{nNodes}{A positive integer passed as the first argument to
-\code{\link[doParallel]{registerDoParallel}}.}
-
-\item{nCores}{A positive integer passed as the second argument to
-\code{\link[doParallel]{registerDoParallel}}. Use
-\code{\link[parallel]{detectCores}} to find out what value makes sense.}
+\item{n}{A positive integer specifying the number of child processes. It is
+passed as the first argument to \code{\link[parallel]{makeCluster}}.}
 
 \item{passIndex}{Logical. If \code{TRUE}, function \code{fn} must accept as
 its second argument an integer value representing the index of the
 currently processed parameter set.}
 
 \item{silent}{Logical. Use this to suppress diagnostic messages.}
+
+\item{logfile}{Name of a file to collect output messages of child processes.
+If this is an empty string (default) output messages are likely to appear
+on the screen.}
 
 \item{...}{Additional arguments passed to function \code{fn}.}
 }
@@ -60,13 +60,16 @@ parallel processing.
 \note{
 The function of interest is called as \code{fn(p[i,], ...)} or
   \code{fn(p[i,], i, ...)}, depending on the value of \code{passIndex}. In
-  the latter case, the index of the currently processed  set available within
+  the latter case, the index of the currently processed set is available within
   \code{fn}. This information can be used, for example, for diagnostic
   messages of for creating file names which are unique for each (possibly
   parallel) instance of \code{fn}.
 
   In any case, \code{fn} is executed within a \code{\link[base]{tryCatch}}
   block. Any error messages (or warnings) are reported as warnings.
+
+  Any data or functions needed within \code{fn} should explicitly be passed
+  using the \code{...} argument.
 }
 \examples{
 # Analysis of a model's goodness-of-fit
@@ -78,12 +81,13 @@ model= function(p, x) {
 # Observations
 obs= cbind(x=1:50, y=model(c(a=1, b=0.1), 1:50))
 # Objective function
-mse= function(p, obs) { mean((obs[,"y"] - model(p, obs[,"x"]))^2) }
+mse= function(p, model, obs) { mean((obs[,"y"] - model(p, obs[,"x"]))^2) }
 # Parameter sets to try
 nSets= 10
 p= cbind(a= seq(0, 2, length.out=nSets), b= seq(-0.2, 0.5, length.out=nSets))
 # Evaluate obj. function for all sets
-x= suppressWarnings(sensit(p=p, fn=mse, obs=obs))
+x= suppressWarnings(
+  sensit(p=p, fn=mse, n=2, model=model, obs=obs, logfile=""))
 # Show parameter sets that 'worked' together with results
 print(cbind(setIndex=x$whichOK, p[x$whichOK,], mse=simplifyList(x$fnOut)))
 }
