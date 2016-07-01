@@ -174,3 +174,49 @@ sim1D.query <- function(obj, item, rangeT=c(NA,NA), rangeX=c(NA,NA),
   return(res)
 }
 
+#' Final state of a 'sim1D' object 
+#'
+#' Extract data from object of Class 'sim1D' for the very last time step
+#'
+#' @param obj Object created with \code{sim1D.create}.
+#'
+#' @return A numeric matrix where rows represent boxes/layers. There is one
+#'   column for each item and columns are named accordingly. Rows are unnamed
+#'   but the following attributes are set:
+#' \itemize{
+#'   \item{\code{time} : } Scalar numeric representing the last time point for
+#'     which data are stored in \code{obj}.
+#'   \item{\code{coordinates} : } Spatial coordinates corresponding to the
+#'     rows of the result. This is a matrix with two colums 'min' and 'max'.
+#' }
+#'
+#' @author David Kneis \email{david.kneis@@tu-dresden.de}
+#'
+#' @export
+#'
+#' @examples
+
+#' gr <- makeGrid(dz0=0.01, dzMax=0.02, zMax=0.1, beta=1)
+#' times <- 0:2
+#' vars <- c("A","B")
+#' pros <- c("X","Y")
+#' values <- matrix(1:(length(times)*nrow(gr)*(length(vars)+length(pros))),
+#'   nrow=length(times))
+#' dyn <- cbind(times, values)
+#' colnames(dyn) <- c("time", paste(rep(vars, each=nrow(gr)), 1:nrow(gr),sep="."),
+#'   paste(rep(pros, each=nrow(gr)), 1:nrow(gr),sep="."))
+#' obj <- sim1D.create(dyn, namesVars=vars, namesPros=pros, xMin=gr$zUp, xMax=gr$zLw)
+#' sim1D.final(obj)
+
+sim1D.final <- function(obj)
+{
+  if (class(obj) != "sim1D")
+    stop("'obj' is not an object of class 'sim1D'")
+  # Return data matrix
+  res <- obj[dim(obj)[1],,]
+  colnames(res) <- attr(obj, which="items", exact=TRUE)
+  attr(res, "time") <- attr(obj, which="times", exact=TRUE)[dim(obj)[1]]
+  attr(res, "coordinates") <- attr(obj, which="coordinates", exact=TRUE)
+  return(res)
+}
+
