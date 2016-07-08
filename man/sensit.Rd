@@ -68,6 +68,10 @@ The function of interest is called as \code{fn(p[i,], ...)} or
   messages of for creating file names which are unique for each (possibly
   parallel) instance of \code{fn}.
 
+  The output of plotting commands within function \code{fn} will usually not
+  appear on screen but it is redirected to some file. In general, it is
+  better to save the required data and create the plots afterwards.
+
   In any case, \code{fn} is executed within a \code{\link[base]{tryCatch}}
   block. The occurrence of any error or warning is considered an exception
   and the evaluation of \code{fn} is aborted. The respective message is
