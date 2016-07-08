@@ -51,6 +51,9 @@ A list with the following components.
   \item{\code{cpu} : } A numeric vector holding the times spent on the
     successfull evaluations of \code{fn}. The vector has the same length as
     \code{whichOK}.
+  \item{\code{msg} : } A vector of length \code{nrow(p)} holding error or
+    warning messages issued by \code{fn}. For the successful runs, this
+    vector contains empty strings.
 }
 }
 \description{
@@ -66,10 +69,13 @@ The function of interest is called as \code{fn(p[i,], ...)} or
   parallel) instance of \code{fn}.
 
   In any case, \code{fn} is executed within a \code{\link[base]{tryCatch}}
-  block. Any error messages (or warnings) are reported as warnings.
+  block. The occurrence of any error or warning is considered an exception
+  and the evaluation of \code{fn} is aborted. The respective message is
+  registered in the \code{msg} vector (see above).
 
-  Any data or functions needed within \code{fn} should explicitly be passed
-  using the \code{...} argument.
+  Any data or functions needed within \code{fn} need to be passed explicitly
+  using the \code{...} argument. This is necessary to make the data /
+  functions available to all parallel threads.
 }
 \examples{
 # Analysis of a model's goodness-of-fit

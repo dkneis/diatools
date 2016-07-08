@@ -43,6 +43,9 @@ utils::globalVariables("indexOfSet")
 #'   \item{\code{cpu} : } A numeric vector holding the times spent on the
 #'     successfull evaluations of \code{fn}. The vector has the same length as
 #'     \code{whichOK}.
+#'   \item{\code{msg} : } A vector of length \code{nrow(p)} holding error or
+#'     warning messages issued by \code{fn}. For the successful runs, this
+#'     vector contains empty strings.
 #' }
 #'
 #' @note The function of interest is called as \code{fn(p[i,], ...)} or
@@ -53,10 +56,13 @@ utils::globalVariables("indexOfSet")
 #'   parallel) instance of \code{fn}.
 #'
 #'   In any case, \code{fn} is executed within a \code{\link[base]{tryCatch}}
-#'   block. Any error messages (or warnings) are reported as warnings.
+#'   block. The occurrence of any error or warning is considered an exception
+#'   and the evaluation of \code{fn} is aborted. The respective message is
+#'   registered in the \code{msg} vector (see above).
 #'
-#'   Any data or functions needed within \code{fn} should explicitly be passed
-#'   using the \code{...} argument.
+#'   Any data or functions needed within \code{fn} need to be passed explicitly
+#'   using the \code{...} argument. This is necessary to make the data /
+#'   functions available to all parallel threads.
 #'
 #' @author David Kneis \email{david.kneis@@tu-dresden.de}
 #'
@@ -91,10 +97,8 @@ sensit= function(p, fn, n=1, passIndex=FALSE, silent=FALSE, logfile="", ...) {
     stop("'p' must be a numeric matrix having column names")
 
   # Create cluster
-  if (n > 1) {
-    cl <- parallel::makeCluster(n, outfile=logfile)
-    doParallel::registerDoParallel(cl)
-  }
+  cl <- parallel::makeCluster(n, outfile=logfile)
+  doParallel::registerDoParallel(cl)
 
   # Function to process a single set
   f= function(i, ...) {
@@ -102,6 +106,7 @@ sensit= function(p, fn, n=1, passIndex=FALSE, silent=FALSE, logfile="", ...) {
       print(paste0("Set ",i," of ",nrow(p)))
     fnOut= NA
     cpu= NA
+    msg= ""
     tryCatch({
       t0= Sys.time()
       fnOut= if (passIndex) {
@@ -112,24 +117,20 @@ sensit= function(p, fn, n=1, passIndex=FALSE, silent=FALSE, logfile="", ...) {
       t1= Sys.time()
       cpu= as.numeric(difftime(t1, t0, units="secs"))
     }, warning= function(w) {
-      warning("warning issued by 'fn' for set ",i,". ",w)
+      msg <<- paste0("warning issued by 'fn' for set ",i,". ",w)
     }, error= function(e) {
-      warning("stop during evaluation of 'fn' for set ",i,". ",e)
+      msg <<- paste0("stop during evaluation of 'fn' for set ",i,". ",e)
     })
-    return(list(fnOut=fnOut, cpu=cpu))
+    return(list(fnOut=fnOut, cpu=cpu, msg=msg))
   }
 
   # Process all sets
-  if (n > 1) {
-    tmp= foreach::foreach(indexOfSet=1:nrow(p)) %dopar% f(indexOfSet, ...)
-    parallel::stopCluster(cl)
-  } else {
-    tmp= f(1, ...)
-  }
-
+  tmp= foreach::foreach(indexOfSet=1:nrow(p)) %dopar% f(indexOfSet, ...)
+  parallel::stopCluster(cl)
   # Split components of result
   cpu= unlist(lapply(tmp, function(x){x$cpu}))
   fnOut= lapply(tmp, function(x){x$fnOut})
+  msg= unlist(lapply(tmp, function(x){x$msg}))
 
   # Drop results for failed model runs
   ok= !is.na(cpu)
@@ -139,6 +140,6 @@ sensit= function(p, fn, n=1, passIndex=FALSE, silent=FALSE, logfile="", ...) {
     names(fnOut)= paste0("set",which(ok))
 
   # Return tested parameter values and function results
-  return(list(nFailed=sum(!ok), whichOK=which(ok), fnOut=fnOut, cpu=cpu))
+  return(list(nFailed=sum(!ok), whichOK=which(ok), fnOut=fnOut, cpu=cpu, msg=msg))
 }
 
