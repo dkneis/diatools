@@ -91,8 +91,10 @@ sensit= function(p, fn, n=1, passIndex=FALSE, silent=FALSE, logfile="", ...) {
     stop("'p' must be a numeric matrix having column names")
 
   # Create cluster
-  cl <- parallel::makeCluster(n, outfile=logfile)
-  doParallel::registerDoParallel(cl)
+  if (n > 1) {
+    cl <- parallel::makeCluster(n, outfile=logfile)
+    doParallel::registerDoParallel(cl)
+  }
 
   # Function to process a single set
   f= function(i, ...) {
@@ -118,8 +120,12 @@ sensit= function(p, fn, n=1, passIndex=FALSE, silent=FALSE, logfile="", ...) {
   }
 
   # Process all sets
-  tmp= foreach::foreach(indexOfSet=1:nrow(p)) %dopar% f(indexOfSet, ...)
-  parallel::stopCluster(cl)
+  if (n > 1) {
+    tmp= foreach::foreach(indexOfSet=1:nrow(p)) %dopar% f(indexOfSet, ...)
+    parallel::stopCluster(cl)
+  } else {
+    tmp= f(1, ...)
+  }
 
   # Split components of result
   cpu= unlist(lapply(tmp, function(x){x$cpu}))
